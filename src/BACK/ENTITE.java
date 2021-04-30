@@ -164,7 +164,7 @@ public class ENTITE {
 
                 //TODO  implementer une fonction permettant de faire faire demi tour aux fantomes en cas de rencontre
 
-                if ()
+                //if ()
 
 
             }

@@ -15,7 +15,7 @@ public class JEU extends Observable implements Runnable {
 
     private DIRECTIONS newDirection;
 
-    private boolean isBoost;
+    private static boolean isBoost;
 
     private boolean stop;
 
