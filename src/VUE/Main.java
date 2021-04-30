@@ -14,10 +14,11 @@ public class Main extends Application {
 
     GridPane gridPane;
     TOUCHE touche;
+    JEU jeu;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        JEU jeu = new JEU();
+        this.jeu = new JEU("Raoul");
 
 
         primaryStage.resizableProperty().set(true);
@@ -63,6 +64,11 @@ public class Main extends Application {
 
         // on affiche la scène
         primaryStage.show();
+
+        new Thread(jeu).start();
+    }
+    public void stop(){
+        this.jeu.stop();
     }
 
 

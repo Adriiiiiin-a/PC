@@ -17,25 +17,45 @@ public class JEU extends Observable implements Runnable {
 
     private static boolean isBoost;
 
+    private static JOUEUR joueur;
+
     private boolean stop;
 
     private int stopBoost;
 
 
-    public JEU() throws IOException {
+
+    public JEU(String pseudo) throws IOException {
 
         super();
-        this.planche = new GRILLE(); //TODO REFACTOR PLANCHE
+        this.planche = new GRILLE();
         this.derniereDirection = DIRECTIONS.DROITE;
         this.newDirection = null;
         this.isBoost = false;
         this.stop = false;
         this.stopBoost = 1000;
 
+        this.joueur = new JOUEUR(pseudo);
+
+
 
     }
 
+    public static boolean isIsBoost() {
+        return isBoost;
+    }
 
+    public static void setIsBoost(boolean isBoost) {
+        JEU.isBoost = isBoost;
+    }
+
+    public static JOUEUR getJoueur() {
+        return joueur;
+    }
+
+    public static void setJoueur(JOUEUR joueu) {
+        joueur = joueu;
+    }
 
     /**
      * When an object implementing interface {@code Runnable} is used
@@ -55,9 +75,11 @@ public class JEU extends Observable implements Runnable {
 
             try{
 
+
                 setChanged();
                 notifyObservers();
                 Thread.sleep(100);
+                //System.out.println("lol");
                 boost();
 
 
@@ -70,6 +92,33 @@ public class JEU extends Observable implements Runnable {
 
 
         }
+
+    }
+
+    public void pacman(){
+
+        try {
+            System.out.println("Coordonnées PACMAN: " + this.getPlanche().trouverPacman().getXlocation() + " " + this.getPlanche().trouverPacman().getYlocation());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            if(this.getPlanche().trouverPacman().peutTraverser(newDirection)){
+
+                this.getPlanche().trouverPacman().deplacerEntite(newDirection);
+                derniereDirection = newDirection;
+
+            }
+            else{
+                this.getPlanche().trouverPacman().deplacerEntite(derniereDirection);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -134,4 +183,11 @@ public class JEU extends Observable implements Runnable {
         }
     }
 
+
+    public void stop() {
+
+        this.stop = true;
+        System.out.println("Score final:" + this.getJoueur().getScore());
+
+    }
 }

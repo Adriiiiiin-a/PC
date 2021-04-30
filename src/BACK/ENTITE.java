@@ -6,6 +6,8 @@ import BACK.TOOLS.TYPEENTITES;
 
 import javax.swing.text.html.ImageView;
 
+import static BACK.TOOLS.TYPEENTITES.*;
+
 public class ENTITE {
 
     private TYPEENTITES typeEntite;
@@ -86,28 +88,28 @@ public class ENTITE {
 
          switch (direction){
              case HAUT -> {
-                 if(this.typeEntite.equals(TYPEENTITES.PACMAN)){
+                 if(this.typeEntite.equals(PACMAN)){
                      this.cheminImageEntite = FONCTIONS.getCheminPacmanHaut();
                  }
                  this.moulinette2(-1,0);
                 break;
              }
              case BAS -> {
-                 if(this.typeEntite.equals(TYPEENTITES.PACMAN)){
+                 if(this.typeEntite.equals(PACMAN)){
                      this.cheminImageEntite = FONCTIONS.getCheminPacmanBas();
                  }
                  this.moulinette2(+1,0);
                  break;
              }
              case GAUCHE -> {
-                 if(this.typeEntite.equals(TYPEENTITES.PACMAN)){
+                 if(this.typeEntite.equals(PACMAN)){
                      this.cheminImageEntite = FONCTIONS.getCheminPacmanGauche();
                  }
                  this.moulinette2(0,-1);
                  break;
              }
              case DROITE -> {
-                 if(this.typeEntite.equals(TYPEENTITES.PACMAN)){
+                 if(this.typeEntite.equals(PACMAN)){
                      this.cheminImageEntite = FONCTIONS.getCheminPacmanDroite();
                  }
                  this.moulinette2(0,+1);
@@ -135,39 +137,100 @@ public class ENTITE {
 
     }
 
+    public TYPEENTITES caseContient(int x, int y){
+
+         ENTITE enti = grille.getPlancheEntites()[x][y];
+
+         return enti.getTypeEntite();
+
+
+    }
+
+
     public void moulinette2(int xToAdd, int yToAdd){
 
 
-        boolean bonbon = this.caseContient(TYPEENTITES.BONBON, (Xlocation+xToAdd),(Ylocation+yToAdd));
-        boolean grosBonbon = this.caseContient(TYPEENTITES.GROS_BONBON, (Xlocation+xToAdd),(Ylocation+yToAdd));
+        boolean bonbon = this.caseContient(BONBON, (Xlocation+xToAdd),(Ylocation+yToAdd));
+        boolean grosBonbon = this.caseContient(GROS_BONBON, (Xlocation+xToAdd),(Ylocation+yToAdd));
         boolean collision = false; // Sera a true s'il y a une collision
         boolean trav = this.grille.checkTraversable((Xlocation+xToAdd),(Ylocation+yToAdd)); //On verifie que la prochaine case est traversable
 
         // Gestion des éventuelles collisions: Fantome rencontre pacman avec & sans boost
 
-        if (this.typeEntite.equals(TYPEENTITES.FANTOME_ORANGE) || this.typeEntite.equals(TYPEENTITES.FANTOME_ROUGE) || this.typeEntite.equals(TYPEENTITES.FANTOME_ROSE)){
+        if (this.typeEntite.equals(FANTOME_ORANGE) || this.typeEntite.equals(FANTOME_ROUGE) || this.typeEntite.equals(FANTOME_ROSE)){
             if (!JEU.isBoost()){
                 collision = true;
             }
         }
-        else if (this.typeEntite.equals(TYPEENTITES.PACMAN)){
+        else if (this.typeEntite.equals(PACMAN)){
 
-            if (this.caseContient(TYPEENTITES.FANTOME_ROUGE, (Xlocation+xToAdd), (Ylocation+yToAdd)) || this.caseContient(TYPEENTITES.FANTOME_ROSE, (Xlocation+xToAdd), (Ylocation+yToAdd)) || this.caseContient(TYPEENTITES.FANTOME_ORANGE, (Xlocation+xToAdd), (Ylocation+yToAdd))){
+            if (this.caseContient(FANTOME_ROUGE, (Xlocation+xToAdd), (Ylocation+yToAdd)) || this.caseContient(FANTOME_ROSE, (Xlocation+xToAdd), (Ylocation+yToAdd)) || this.caseContient(FANTOME_ORANGE, (Xlocation+xToAdd), (Ylocation+yToAdd))){
 
                 collision = true;
             }
         }
 
+        // ON VERIF S'IL Y A COLLISION
+        if(collision){
+
+            this.grille.setPerdue(); //TODO grille.setPerdue() => Perdue à True && grille.setNonPerdue() => Perdue à False
+
+        }
+
+
+
         if (!collision && trav){
 
-            if (this.typeEntite.equals(TYPEENTITES.FANTOME_ORANGE) || this.typeEntite.equals(TYPEENTITES.FANTOME_ROUGE) || this.typeEntite.equals(TYPEENTITES.FANTOME_ROSE)){
+            // FANTOMES
+
+            if (this.typeEntite.equals(FANTOME_ORANGE) || this.typeEntite.equals(FANTOME_ROUGE) || this.typeEntite.equals(FANTOME_ROSE)){
 
                 //TODO  implementer une fonction permettant de faire faire demi tour aux fantomes en cas de rencontre
 
                 //if ()
 
+                if (this.caseContient(BONBON, (Xlocation+xToAdd),(Ylocation+yToAdd))){
+
+                    this.grille.getPlancheEntites()[this.Xlocation][this.Ylocation] = new ENTITE(BONBON,this.grille, this.Xlocation,this.Ylocation,FONCTIONS.getCheminBonbon());
+
+                }
+
+                switch(this.caseContient((this.Xlocation+xToAdd),(this.Ylocation+yToAdd))){
+
+                    case BONBON -> {
+                        this.grille.getPlancheEntites()[this.Xlocation][this.Ylocation] = new ENTITE(BONBON,this.grille, this.Xlocation,this.Ylocation,FONCTIONS.getCheminBonbon());
+                        break;
+                    }
+                    case GROS_BONBON -> {
+                        this.grille.getPlancheEntites()[this.Xlocation][this.Ylocation] = new ENTITE(GROS_BONBON,this.grille, this.Xlocation,this.Ylocation,FONCTIONS.getCheminGrosBonbon());
+                        JEU.setIsBoost(true); //TODO JEU.setisBoost()
+                        break;
+                    }
+                    default -> {
+                        this.grille.getPlancheEntites()[this.Xlocation][this.Ylocation] = new ENTITE(VIDE,this.grille, this.Xlocation,this.Ylocation,FONCTIONS.getCheminVide());
+                    }
+                }
+
+                this.grille.getPlancheEntites()[Xlocation+xToAdd][Ylocation+yToAdd] = this;
 
             }
+
+            /// PACMAN
+
+            if (this.typeEntite.equals(PACMAN)){
+
+                switch(this.caseContient((this.Xlocation+xToAdd),(this.Ylocation+yToAdd))){
+
+                    case BONBON -> grille.bonbon();
+                    case GROS_BONBON -> grille.grosBonbon(); //TODO grille.bonbon & grille.grosBonbon
+
+                }
+                this.grille.getPlancheEntites()[Xlocation+xToAdd][Ylocation+yToAdd] = this;
+                this.grille.getPlancheEntites()[this.Xlocation][this.Ylocation] = new ENTITE(VIDE,this.grille, this.Xlocation,this.Ylocation,FONCTIONS.getCheminVide());
+            }
+            this.Xlocation += xToAdd;
+            this.Ylocation += yToAdd;
+
 
         }
 

@@ -11,6 +11,8 @@ public class GRILLE {
 
     private int nombreBonbons;
 
+    private boolean mort;
+
     private static ENTITE[][] plancheEntites;
 
 
@@ -185,6 +187,28 @@ public class GRILLE {
 
     }
 
+    /**
+     * Augmente le score du joueur de 10
+     */
+    public void bonbon(){
+        JEU.getJoueur().setScore((JEU.getJoueur().getScore()+10));
+    }
+
+    /**
+     * Augmente le score du joueur de n
+     * @param n le nombre de points à ajouter
+     */
+    public void bonbon(int n){
+        JEU.getJoueur().setScore((JEU.getJoueur().getScore()+n));
+    }
+
+    /**
+     * Augmente le score de 50
+     */
+    public void grosBonbon(){
+        bonbon(50);
+    }
+
 
     public ENTITE trouverPacman() throws Exception {
 
@@ -241,6 +265,12 @@ public class GRILLE {
                 case FANTOME_ROSE -> fantome.setCheminImageEntite(FONCTIONS.getCheminFantomeRose());
             }
         }
+
+    }
+
+    public void setPerdue(){
+
+        this.mort =true;
 
     }
 
